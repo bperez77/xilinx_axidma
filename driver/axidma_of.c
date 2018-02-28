@@ -212,6 +212,14 @@ int axidma_of_parse_dma_nodes(struct platform_device *pdev,
     dev->num_vdma_tx_chans = 0;
     dev->num_vdma_rx_chans = 0;
 
+    rc = of_property_read_u32(driver_node, "index", &dev->chrdev_index);
+
+    if (rc < 0) {
+        if (rc != -EINVAL)
+            axidma_node_err(driver_node, "Invalid index property, ignoring.\n");
+        dev->chrdev_index = -1;
+    }
+
     /* For each DMA channel specified in the deivce tree, parse out the
      * information about the channel, namely its direction and type. */
     for (i = 0; i < dev->num_chans; i++)

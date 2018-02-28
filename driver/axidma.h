@@ -51,6 +51,7 @@ struct axidma_device {
     unsigned int minor_num;         // The minor number of the device
     dev_t dev_num;                  // The device number of the device
     char *chrdev_name;              // The name of the character device
+    int chrdev_index;               // The optional character device index
     struct device *device;          // Device structure for the char device
     struct class *dev_class;        // The device class for the chardevice
     struct cdev chrdev;             // The character device structure
@@ -61,6 +62,7 @@ struct axidma_device {
     int num_vdma_rx_chans;          // The number of receive  VDMA channels
     int num_chans;                  // The total number of DMA channels
     int notify_signal;              // Signal used to notify transfer completion
+    void *user_data;                // User data to be passed in the callback
     struct platform_device *pdev;   // The platofrm device from the device tree
     struct axidma_cb_data *cb_data; // The callback data for each channel
     struct axidma_chan *channels;   // All available channels
@@ -98,7 +100,7 @@ void axidma_get_num_channels(struct axidma_device *dev,
                              struct axidma_num_channels *num_chans);
 void axidma_get_channel_info(struct axidma_device *dev,
                              struct axidma_channel_info *chan_info);
-int axidma_set_signal(struct axidma_device *dev, int signal);
+int axidma_set_signal(struct axidma_device *dev, int signal, void *user_data);
 int axidma_read_transfer(struct axidma_device *dev,
                           struct axidma_transaction *trans);
 int axidma_write_transfer(struct axidma_device *dev,
@@ -108,6 +110,7 @@ int axidma_rw_transfer(struct axidma_device *dev,
 int axidma_video_transfer(struct axidma_device *dev,
                           struct axidma_video_transaction *trans,
                           enum axidma_dir dir);
+int axidma_get_residue(struct axidma_device *dev, struct axidma_residue *res);
 int axidma_stop_channel(struct axidma_device *dev, struct axidma_chan *chan);
 dma_addr_t axidma_uservirt_to_dma(struct axidma_device *dev, void *user_addr,
                                   size_t size);

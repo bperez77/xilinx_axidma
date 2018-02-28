@@ -47,18 +47,33 @@ typedef struct array {
 typedef void (*axidma_cb_t)(int channel_id, void *data);
 
 /**
- * Initializes an AXI DMA device, returning a handle to the device.
+ * Initializes the first AXI DMA device, returning a handle to the device.
  *
- * There is only one AXI DMA device, since it represents all of the available
- * channels. Thus, this function should only be invoked once, unless a call has
- * been made to #axidma_destroy. Otherwise, this function will abort.
+ * There is only one AXI DMA device per DMA, since it represents all of the
+ * available channels. Thus, this function should only be invoked once, unless
+ * a call has been made to #axidma_destroy. Otherwise, this function will abort.
+ *
+ * This function is equivalent with axidma_init_dev(0).
  *
  * @return A handle to the AXI DMA device on success, NULL on failure.
  **/
 struct axidma_dev *axidma_init();
 
 /**
- * Tears down and destroys an AXI DMA device, deallocating its resources.
+ * Initializes a AXI DMA device, returning a handle to the device.
+ *
+ * There is only one AXI DMA device per DMA, since it represents all of the
+ * available channels. Thus, this function should only be invoked once for every
+ * DMA, unless a call has been made to #axidma_destroy. Otherwise, this function
+ * will abort.
+ *
+ * @param[in] index The index of the device, specified in the device tree.
+ * @return A handle to the AXI DMA device on success, NULL on failure.
+ **/
+struct axidma_dev *axidma_init_dev(unsigned int index);
+
+/**
+ * Tears down and destroys one AXI DMA device, deallocating its resources.
  *
  * @param[in] dev An #axidma_dev_t returned by #axidma_init.
  **/
@@ -269,6 +284,16 @@ int axidma_twoway_transfer(axidma_dev_t dev, int tx_channel, void *tx_buf,
  **/
 int axidma_video_transfer(axidma_dev_t dev, int display_channel, size_t width,
         size_t height, size_t depth, void **frame_buffers, int num_buffers);
+
+/**
+ * Get the residue of the last transaction
+ *
+ * @param[in] dev An #axidma_dev_t returned by #axidma_init.
+ * @param[in] channel DMA channel.
+ * @param[in] residue A pointer to store the returned residue.
+ * @return 0 upon success, a negative number on failure.
+ **/
+int axidma_get_residue(axidma_dev_t dev, int channel, unsigned int *residue);
 
 /**
  * Stops the DMA transfer on specified DMA channel.

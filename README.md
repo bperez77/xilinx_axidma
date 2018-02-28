@@ -47,6 +47,7 @@ The driver requires a node in the device tree. This node describes the DMA chann
 * `compatible` - This must be the string "xlnx,axidma-chrdev". This is used to match the driver with the device tree node.
 * `dmas` - A list of phandles (references to other device tree nodes) of Xilinx AXI DMA or VDMA device tree nodes, followed by either 0 or 1. This refers to the child node inside of the Xilinx AXI DMA/VDMA device tree node, 0 of course being the first child node.
 * `dma-names` - A list of names for the DMA channels. The names can be completely arbitrary, but they must be unique. This is required by the DMA interface function `dma_request_slave_channel()`, but is otherwise unused by the driver. In the future, the driver will use the names in printed messages.
+* `index` - A non-negative integer which represents the index of this DMA device, optional if only one DMA device is present. If unset, defaults to 0.  The indexes are not required to be consecutive, but they must be unique. The corresponding character device will appear as `/dev/axidma` when index is 0 or `/dev/axidma<index>` otherwise.
 
 For the Xilinx AXI DMA/VDMA device tree nodes, the only requirement is that the `device-id` property is unique, but they can be completely arbitrary. This is how the channels are referred to in both the driver and from userspace. For more information on creating AXI DMA/VDMA device tree nodes, consult the kernel [documentation](https://github.com/Xilinx/linux-xlnx/blob/master/Documentation/devicetree/bindings/dma/xilinx/xilinx_dma.txt) for them.
 
