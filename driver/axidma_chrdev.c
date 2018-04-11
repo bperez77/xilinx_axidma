@@ -88,7 +88,7 @@ dma_addr_t axidma_uservirt_to_dma(struct axidma_device *dev, void *user_addr,
                                   user_addr, size);
         if (valid) {
             offset = (dma_addr_t)(user_addr - dma_alloc->user_addr);
-            return dma_alloc->dma_addr;
+            return dma_alloc->dma_addr + offset;
         }
     }
 
