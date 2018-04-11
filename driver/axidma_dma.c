@@ -12,7 +12,15 @@
 // Kernel dependencies
 #include <linux/delay.h>            // Milliseconds to jiffies converstion
 #include <linux/wait.h>             // Completion related functions
+
+/* <linux/signal.h> was moved to <linux/sched/signal.h> in the 4.11 kernel */
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4,11,0)
+#include <linux/sched.h>            // Send signal to process function
+#else
 #include <linux/sched/signal.h>     // send_sig_info function
+#endif
+
 #include <linux/dmaengine.h>        // DMA types and functions
 #include <linux/slab.h>             // Allocation functions
 #include <linux/errno.h>            // Linux error codes
