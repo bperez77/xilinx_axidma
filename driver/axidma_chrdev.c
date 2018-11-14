@@ -277,7 +277,6 @@ static int axidma_mmap(struct file *file, struct vm_area_struct *vma)
     of_dma_configure(dev->device, NULL);
 
     // Allocate the requested region a contiguous and uncached for DMA
-    vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
     dma_alloc->kern_addr = dma_alloc_coherent(&dev->pdev->dev, dma_alloc->size,
                                               &dma_alloc->dma_addr, GFP_KERNEL);
     if (dma_alloc->kern_addr == NULL) {
