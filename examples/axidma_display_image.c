@@ -184,7 +184,7 @@ static int parse_args(int argc, char **argv, char **image_path,
 static int find_dma_channel(int axidma_fd)
 {
     int rc, i;
-    struct axidma_chan *channels, *chan;
+    struct axidma_chan chan;
     struct axidma_num_channels num_chan;
     struct axidma_channel_info channel_info;
 
@@ -199,30 +199,29 @@ static int find_dma_channel(int axidma_fd)
     }
 
     // Get the metdata about all the available channels
-    channels = malloc(num_chan.num_channels * sizeof(*channels));
-    if (channels == NULL) {
+    channel_info.channels = malloc(num_chan.num_channels * sizeof(*channel_info.channels));
+    if (channel_info.channels == NULL) {
         fprintf(stderr, "Unable to allocate channel information buffer.\n");
         return -ENOMEM;
     }
-    channel_info.channels = channels;
     rc = ioctl(axidma_fd, AXIDMA_GET_DMA_CHANNELS, &channel_info);
     if (rc < 0) {
         perror("Unable to get DMA channel information");
-        free(channels);
+        free(channel_info.channels);
         return rc;
     }
 
     // Search for the first available transmit DMA channel
     for (i = 0; i < num_chan.num_channels; i++)
     {
-        chan = &channel_info.channels[i];
-        if (chan->dir == AXIDMA_WRITE && chan->type == AXIDMA_DMA) {
-            free(channels);
-            return chan->channel_id;
+        chan = channel_info.channels[i];
+        if (chan.dir == AXIDMA_WRITE && chan.type == AXIDMA_DMA) {
+            free(channel_info.channels);
+            return chan.channel_id;
         }
     }
 
-    free(channels);
+    free(channel_info.channels);
     fprintf(stderr, "No transmit DMA channels are present.\n");
     return -ENODEV;
 }
