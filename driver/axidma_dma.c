@@ -587,7 +587,7 @@ int axidma_video_transfer(struct axidma_device *dev,
 
     // Get the channel with the given id
     chan = axidma_get_chan(dev, trans->channel_id);
-    if (chan == NULL && chan->dir != dir &&
+    if (chan == NULL || chan->dir != dir ||
             chan->type != AXIDMA_VDMA) {
         axidma_err("Invalid device id %d for VDMA %s channel.\n",
                    trans->channel_id, axidma_dir_to_string(chan->dir));
@@ -618,7 +618,7 @@ int axidma_stop_channel(struct axidma_device *dev,
 
     // Get the transmit and receive channels with the given ids.
     chan = axidma_get_chan(dev, chan_info->channel_id);
-    if (chan == NULL && chan->type != chan_info->type &&
+    if (chan == NULL || chan->type != chan_info->type ||
             chan->dir != chan_info->dir) {
         axidma_err("Invalid channel id %d for %s %s channel.\n",
             chan_info->channel_id, axidma_type_to_string(chan_info->type),
