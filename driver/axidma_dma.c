@@ -387,6 +387,11 @@ int axidma_read_transfer(struct axidma_device *dev,
     rx_tfr.process = get_current();
     rx_tfr.cb_data = &dev->cb_data[trans->channel_id];
 
+    // Add in the frame information for VDMA transfers
+    if (rx_chan->type == AXIDMA_VDMA) {
+        memcpy(&rx_tfr.frame, &trans->frame, sizeof(rx_tfr.frame));
+    }
+
     // Prepare the receive transfer
     rc = axidma_prep_transfer(rx_chan, &rx_tfr);
     if (rc < 0) {
@@ -436,6 +441,11 @@ int axidma_write_transfer(struct axidma_device *dev,
     tx_tfr.notify_signal = dev->notify_signal;
     tx_tfr.process = get_current();
     tx_tfr.cb_data = &dev->cb_data[trans->channel_id];
+    
+    // Add in the frame information for VDMA transfers
+    if (tx_chan->type == AXIDMA_VDMA) {
+        memcpy(&tx_tfr.frame, &trans->frame, sizeof(tx_tfr.frame));
+    }
 
     // Prepare the transmit transfer
     rc = axidma_prep_transfer(tx_chan, &tx_tfr);

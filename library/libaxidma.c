@@ -467,6 +467,38 @@ int axidma_oneway_transfer(axidma_dev_t dev, int channel, void *buf,
     return 0;
 }
 
+/* This performs a one-way transfer over AXI VDMA, the direction being specified
+ * by the user. The user determines if this is blocking or not with `wait. */
+int axivdma_oneway_transfer(axidma_dev_t dev, int channel,  void *buf, 
+        struct axidma_video_frame *frame, size_t len, bool wait)
+{
+    int rc;
+    struct axidma_transaction trans;
+    unsigned long axidma_cmd;
+    dma_channel_t *dma_chan;
+
+    assert(find_channel(dev, channel) != NULL);
+
+    // Setup the argument structure to the IOCTL
+    dma_chan = find_channel(dev, channel);
+    trans.wait = wait;
+    trans.channel_id = channel;
+    trans.buf = buf;
+    trans.buf_len = len;
+    axidma_cmd = dir_to_ioctl(dma_chan->dir);
+    
+    memcpy(&trans.frame, frame, sizeof(trans.frame));
+    
+    // Perform the given transfer
+    rc = ioctl(dev->fd, axidma_cmd, &trans);
+    if (rc < 0) {
+        perror("Failed to perform the AXI DMA transfer");
+        return rc;
+    }
+
+    return 0;
+}
+
 /* This performs a two-way transfer over AXI DMA, both sending data out and
  * receiving it back over DMA. The user determines if this call is blocking. */
 int axidma_twoway_transfer(axidma_dev_t dev, int tx_channel, void *tx_buf,
