@@ -214,6 +214,32 @@ int axidma_oneway_transfer(axidma_dev_t dev, int channel, void *buf, size_t len,
         bool wait);
 
 /**
+ * Performs a single DMA transfer in the specified direction on the DMA channel.
+ *
+ * This function will perform a single DMA transfer using the specified buffer.
+ * If wait is false, then this function will be non-blocking, and if the user
+ * registered a callback function, it will be invoked upon completion of the
+ * transfer.
+ *
+ * The addresses \p buf and \p buf+\p len must be within a buffer that was
+ * previously allocated by #axidma_malloc or registered with
+ * #axidma_register_buffer. This function will abort if the channel is invalid.
+ *
+ * @param[in] dev An #axidma_dev_t returned by #axidma_init.
+ * @param[in] channel VDMA channel the transfer is performed on.
+ * @param[in] buf Address of the DMA buffer to transfer, previously allocated by
+ *                #axidma_malloc or registered with #axidma_register_buffer.
+ * param[in] rx_frame Information about the video frame for the receive
+ *                     channel.
+ * @param[in] len Number of bytes that will be transfered.
+ * @param[in] wait Indicates if the transfer should be synchronous or
+ *                 asynchronous. If true, this function will block.
+ * @return 0 upon success, a negative number on failure.
+ **/
+int axivdma_oneway_transfer(axidma_dev_t dev, int channel,  void *buf, 
+        struct axidma_video_frame *frame, size_t len, bool wait);
+
+/**
  * Performs a two coupled DMA transfers, one in the receive direction, the other
  * in the transmit direction.
  *
