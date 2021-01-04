@@ -140,6 +140,23 @@ static struct axidma_chan *axidma_get_chan(struct axidma_device *dev,
     return NULL;
 }
 
+static int axidma_get_chan_index(struct axidma_device *dev,
+        int channel_id)
+{
+    int i;
+    struct axidma_chan *chan;
+
+    // Find the channel with the given ID that matches the type and direction
+    for (i = 0; i < dev->num_chans; i++)
+    {
+        chan = &dev->channels[i];
+        if (chan->channel_id == channel_id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 static void axidma_dma_callback(void *data)
 {
     struct axidma_cb_data *cb_data;
@@ -385,7 +402,7 @@ int axidma_read_transfer(struct axidma_device *dev,
     rx_tfr.channel_id = trans->channel_id;
     rx_tfr.notify_signal = dev->notify_signal;
     rx_tfr.process = get_current();
-    rx_tfr.cb_data = &dev->cb_data[trans->channel_id];
+    rx_tfr.cb_data = &dev->cb_data[axidma_get_chan_index(dev, trans->channel_id)];
 
     // Prepare the receive transfer
     rc = axidma_prep_transfer(rx_chan, &rx_tfr);
@@ -435,7 +452,7 @@ int axidma_write_transfer(struct axidma_device *dev,
     tx_tfr.channel_id = trans->channel_id;
     tx_tfr.notify_signal = dev->notify_signal;
     tx_tfr.process = get_current();
-    tx_tfr.cb_data = &dev->cb_data[trans->channel_id];
+    tx_tfr.cb_data = &dev->cb_data[axidma_get_chan_index(dev, trans->channel_id)];
 
     // Prepare the transmit transfer
     rc = axidma_prep_transfer(tx_chan, &tx_tfr);
@@ -500,7 +517,7 @@ int axidma_rw_transfer(struct axidma_device *dev,
     tx_tfr.channel_id = trans->tx_channel_id,
     tx_tfr.notify_signal = dev->notify_signal,
     tx_tfr.process = get_current(),
-    tx_tfr.cb_data = &dev->cb_data[trans->tx_channel_id];
+    tx_tfr.cb_data = &dev->cb_data[axidma_get_chan_index(dev, trans->channel_id)];
 
     // Add in the frame information for VDMA transfers
     if (tx_chan->type == AXIDMA_VDMA) {
@@ -515,7 +532,7 @@ int axidma_rw_transfer(struct axidma_device *dev,
     rx_tfr.channel_id = trans->rx_channel_id,
     rx_tfr.notify_signal = dev->notify_signal,
     rx_tfr.process = get_current(),
-    rx_tfr.cb_data = &dev->cb_data[trans->rx_channel_id];
+    rx_tfr.cb_data = &dev->cb_data[axidma_get_chan_index(dev, trans->channel_id)];
 
     // Add in the frame information for VDMA transfers
     if (tx_chan->type == AXIDMA_VDMA) {
