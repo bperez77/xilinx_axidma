@@ -274,7 +274,8 @@ static int axidma_mmap(struct file *file, struct vm_area_struct *vma)
     dma_alloc->user_addr = (void *)vma->vm_start;
 
     // Configure the DMA device
-    of_dma_configure(dev->device, NULL);
+    // of_dma_configure(dev->device, NULL);    // --- fly_pig
+    of_dma_configure(dev->device, NULL, true); // --- fly_pig
 
     // Allocate the requested region a contiguous and uncached for DMA
     dma_alloc->kern_addr = dma_alloc_coherent(&dev->pdev->dev, dma_alloc->size,
