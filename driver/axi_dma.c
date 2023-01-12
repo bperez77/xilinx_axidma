@@ -19,6 +19,8 @@
 // Local dependencies
 #include "axidma.h"                 // Internal definitions
 
+#include <linux/of_dma.h> // -- fly_pig
+
 /*----------------------------------------------------------------------------
  * Module Parameters
  *----------------------------------------------------------------------------*/

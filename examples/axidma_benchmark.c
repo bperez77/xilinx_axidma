@@ -466,6 +466,8 @@ int main(int argc, char **argv)
     const array_t *tx_chans, *rx_chans;
     struct axidma_video_frame transmit_frame, *tx_frame, receive_frame, *rx_frame;
 
+    printf("enter main");
+
     // Check if the user overrided the default transfer size and number
     if (parse_args(argc, argv, &tx_channel, &rx_channel, &tx_size,
             &transmit_frame, &rx_size, &receive_frame, &num_transfers,
